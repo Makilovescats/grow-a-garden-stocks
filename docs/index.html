@@ -72,6 +72,8 @@
     btn.onclick = () => {
       document.body.classList.toggle('dark');
     };
+    // Set your Replit backend URL here
+    const API_URL = "https://Meow.makiluvscats.repl.co/stocks";
     // Animate list item changes
     function animateListUpdate(list, items, getContent, colorClass) {
       list.innerHTML = '';
@@ -86,7 +88,7 @@
       });
     }
     async function fetchStocks() {
-      const res = await fetch('/stocks');
+      const res = await fetch(API_URL);
       const data = await res.json();
       const gearList = document.getElementById('gear-list');
       const seedsList = document.getElementById('seeds-list');
