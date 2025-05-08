@@ -1,0 +1,6 @@
+# Ignore sensitive files and folders
+node_modules/
+stocks.json
+discord-poller.js
+server.js
+.env

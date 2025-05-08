@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "discord.js": "^14.19.3",
+    "express": "^5.1.0"
+  },
+  "scripts": {
+    "start": "concurrently \"node server.js\" \"node discord-poller.js\""
+  }
+}
