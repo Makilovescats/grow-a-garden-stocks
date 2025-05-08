@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grow a Garden Stocks</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="/icon.png">
+  <style>
+    /* Custom animation for fade-in */
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: '#18181b',
+            card: '#23232a',
+            accent: '#4ade80',
+            text: '#e5e7eb',
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="dark bg-background min-h-screen text-text font-sans">
+  <header class="sticky top-0 z-50 bg-card/90 backdrop-blur shadow-lg py-4 mb-8 transition-all duration-500">
+    <div class="container mx-auto flex items-center justify-between px-4">
+      <div class="flex items-center gap-2">
+        <img src="/icon.png" alt="Logo" class="w-8 h-8">
+        <span class="text-2xl font-bold text-accent tracking-tight">Grow a Garden Stocks</span>
+      </div>
+      <button id="toggle-dark" class="bg-accent hover:bg-green-600 text-background px-4 py-2 rounded-lg shadow transition-all duration-300">Toggle Dark Mode</button>
+    </div>
+  </header>
+  <main class="container mx-auto px-4 flex flex-col items-center fade-in">
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Gear -->
+      <section class="bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105">
+        <h2 class="text-xl font-bold text-blue-400 mb-2">Gear Stock</h2>
+        <ul id="gear-list" class="w-full space-y-2"></ul>
+      </section>
+      <!-- Eggs -->
+      <section class="bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105">
+        <h2 class="text-xl font-bold text-purple-400 mb-2">Egg Stock</h2>
+        <ul id="eggs-list" class="w-full space-y-2"></ul>
+      </section>
+      <!-- Seeds/Fruits -->
+      <section class="bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105">
+        <h2 class="text-xl font-bold text-orange-400 mb-2">Seeds/Fruits Stock</h2>
+        <ul id="seeds-list" class="w-full space-y-2"></ul>
+      </section>
+    </div>
+    <div class="mt-12 text-center text-gray-400 text-sm animate-fadeIn">
+      <p>Site updates every 10 seconds. Data is based on the latest Discord bot message.</p>
+      <p class="mt-2">Made for the Grow a Garden community.</p>
+    </div>
+  </main>
+  <script>
+    // Dark mode toggle
+    const btn = document.getElementById('toggle-dark');
+    btn.onclick = () => {
+      document.body.classList.toggle('dark');
+    };
+    // Animate list item changes
+    function animateListUpdate(list, items, getContent, colorClass) {
+      list.innerHTML = '';
+      items.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.className = `flex items-center gap-2 bg-background rounded-lg px-4 py-2 shadow transition-all duration-300 opacity-0 translate-y-4 ${colorClass}`;
+        li.innerHTML = getContent(item);
+        list.appendChild(li);
+        setTimeout(() => {
+          li.classList.remove('opacity-0', 'translate-y-4');
+        }, 100 + i * 60);
+      });
+    }
+    async function fetchStocks() {
+      const res = await fetch('/stocks');
+      const data = await res.json();
+      const gearList = document.getElementById('gear-list');
+      const seedsList = document.getElementById('seeds-list');
+      const eggsList = document.getElementById('eggs-list');
+      animateListUpdate(
+        gearList,
+        Object.entries(data.gear || {}),
+        ([name, count]) => `<span class='font-semibold'>${name}</span> <span class='ml-auto text-blue-400 font-bold'>x${count}</span>`,
+        'hover:bg-blue-900'
+      );
+      animateListUpdate(
+        seedsList,
+        Object.entries(data.seeds || {}),
+        ([name, count]) => `<span class='font-semibold'>${name}</span> <span class='ml-auto text-orange-400 font-bold'>x${count}</span>`,
+        'hover:bg-orange-900'
+      );
+      animateListUpdate(
+        eggsList,
+        data.eggs || [],
+        (egg) => `<span class='font-semibold'>${egg}</span>`,
+        'hover:bg-purple-900'
+      );
+    }
+    fetchStocks();
+    setInterval(fetchStocks, 10000);
+  </script>
+</body>
+</html>
